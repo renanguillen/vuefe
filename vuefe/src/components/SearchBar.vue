@@ -26,25 +26,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { usePokemonStore } from '@/stores/pokemonStore'
 
 const searchQuery = ref('')
 const filteredPokemons = ref([])
-const allPokemons = ref([])
 
 const selectedIndex = ref(-1)
 const router = useRouter()
 
-const fetchAllPokemons = async () => {
-  try {
-    const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=151')
-    allPokemons.value = response.data.results
-  } catch (error) {
-    console.error('Erro ao buscar Pokémons:', error)
-  }
-}
+const pokemonStore = usePokemonStore()
+
+const allPokemons = computed(() => pokemonStore.pokemons)
 
 const searchPokemons = () => {
   const query = searchQuery.value.toLowerCase()
@@ -77,11 +71,16 @@ const goToPokemon = (name) => {
 }
 
 const capitalizeName = (name) => {
-  return name.charAt(0).toUpperCase() + name.slice(1)
+  return name
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
 }
 
 onMounted(() => {
-  fetchAllPokemons()
+  if (pokemonStore.pokemons.length === 0) {
+    pokemonStore.fetchPokemons()
+  }
 })
 </script>
 

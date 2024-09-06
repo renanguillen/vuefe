@@ -12,7 +12,7 @@ export const usePokemonStore = defineStore('pokemon', {
     async fetchPokemons() {
       this.loading = true
       try {
-        const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=151')
+        const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=10000')
         this.pokemons = response.data.results
       } catch (error) {
         this.error = 'Erro ao buscar os Pokémons'

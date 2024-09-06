@@ -12,9 +12,14 @@
       
       <p class="flex items-center"><strong>Types:</strong>
         <span class="flex space-x-4 ml-2">
-          <span v-for="type in pokemonDetails.types" :key="type.slot">
-            <img :src="getTypeIcon(type.type.name)" alt="Icone do tipo" class="w-6 h-6" />
-          </span>
+          <router-link
+            v-for="type in pokemonDetails.types"
+            :key="type.slot"
+            :to="`/type/${type.type.name}`"
+            class="flex items-center space-x-2"
+          >
+            <img :src="getTypeIcon(type.type.name)" alt="Icone do tipo" class="w-6 h-6 cursor-pointer" />
+          </router-link>
         </span>
       </p>
 
@@ -32,15 +37,20 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import { usePokemonStore } from '@/stores/pokemonStore'
 
 const route = useRoute()
-const pokemonDetails = ref(null)
-const loading = ref(false)
-const error = ref(null)
+const pokemonStore = usePokemonStore()
+
+const pokemonDetails = computed(() => pokemonStore.pokemonDetails)
+const loading = computed(() => pokemonStore.loading)
+const error = computed(() => pokemonStore.error)
 
 const capitalizeName = (name) => {
-  return name ? name.charAt(0).toUpperCase() + name.slice(1) : ''
+  return name
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
 }
 
 const abilitiesList = computed(() => {
@@ -56,20 +66,8 @@ const getTypeIcon = (type) => {
   return new URL(`../assets/${type}.png`, import.meta.url).href
 }
 
-const fetchPokemonDetails = async () => {
-  loading.value = true
-  try {
-    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${route.params.name}`)
-    pokemonDetails.value = response.data
-  } catch (err) {
-    error.value = 'Erro ao buscar os detalhes do Pokémon.'
-  } finally {
-    loading.value = false
-  }
-}
-
 onMounted(() => {
-  fetchPokemonDetails()
+  pokemonStore.fetchPokemonDetails(`https://pokeapi.co/api/v2/pokemon/${route.params.name}`)
 })
 </script>
 
@@ -87,7 +85,7 @@ onMounted(() => {
   height: 1.5rem;
 }
 
-.flex {
-  display: flex;
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

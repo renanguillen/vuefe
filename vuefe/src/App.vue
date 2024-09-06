@@ -9,6 +9,13 @@
         <router-link to="/pokemons" class="text-lg font-medium hover:underline" style="padding-top: 6.5px;">
           Todos
         </router-link>
+        <span class="text-white text-xl">|</span>
+        
+        <div class="flex space-x-4">
+          <router-link v-for="type in types" :key="type" :to="`/type/${type}`">
+            <img :src="getTypeIcon(type)" alt="Icone do tipo" class="w-8 h-8" />
+          </router-link>
+        </div>
       </div>
     </header>
 
@@ -17,12 +24,19 @@
     </main>
 
     <footer class="p-4 bg-red-600 text-white text-center fixed bottom-0 left-0 w-full">
-      <p>Feito com ❤️ usando Vue.js e PokeAPI</p>
+      <p>Feito utilizando Vue.js, Tailwind, Pinia e PokeAPI</p>
     </footer>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const types = ['normal', 'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dark', 'dragon', 'steel', 'fairy']
+
+const getTypeIcon = (type) => {
+  return new URL(`./assets/${type}.png`, import.meta.url).href
+}
 </script>
 
 <style scoped>
@@ -32,5 +46,10 @@ header {
 
 footer {
   background-color: #b61d1d;
+}
+
+.w-8 {
+  width: 2rem;
+  height: 2rem;
 }
 </style>
